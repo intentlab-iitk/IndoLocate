@@ -145,7 +145,7 @@ alldata = alldata(1:packet-1);
 
 fprintf('Found CSI for %d packets\n\n', packet-1);
 
-%% Actual angle calculation
+% Actual angle calculation
 
 num_packets = length(alldata);
 subcarriers = get_subcarriers(ch_num);
@@ -154,7 +154,13 @@ subcarriers = get_subcarriers(ch_num);
 AoA_31 = zeros(1, num_packets); % Left - Middle
 AoA_14 = zeros(1, num_packets); % Middle - Right
 AoA_34 = zeros(1, num_packets); % Left - Right
+target_loc = zeros(2, num_packets); % Location of target
 timestamps = zeros(1, num_packets);
+
+% Antenna positions
+ap_31 = [-d/2, 0]; % Left-Middle antennas
+ap_14 = [+d/2, 0]; % Middle-Right antenna
+ap_34 = [0, 0];    % Right-Middle antenna
 
 % Loop through each element in alldata
 for i = 1:num_packets
@@ -169,24 +175,81 @@ for i = 1:num_packets
     AoA_14(i) = extract_angle(phi_1, phi_4, subcarriers, d); % Middle-Right
     AoA_34(i) = extract_angle(phi_3, phi_4, subcarriers, d); % Left-Right
 
+    % Estimate the client position using triangulation
+    Q = [
+        tan(AoA_31(i)), -1;
+        tan(AoA_14(i)), -1;
+        tan(AoA_34(i)), -1;
+    ];
+    
+    f = [
+        ap_31(1)*tan(AoA_31(i)) - ap_31(2);
+        ap_14(1)*tan(AoA_14(i)) - ap_14(2);
+        ap_34(1)*tan(AoA_34(i)) - ap_34(2)
+    ];
+
+    target_loc(:, i) = (Q' * Q) \ (Q' * f);
+
     % Extract timestamp for the current element
     timestamps(i) = alldata(i).ts;
 end
 
-% Plot AoA over time for each antenna pair
-figure('Name', 'IndoLocate');
-hold on; % Hold on to overlay multiple plots
-plot(timestamps, AoA_31, '-o', 'DisplayName', 'AoA 3-1 (Left-Middle)');
-plot(timestamps, AoA_14, '-s', 'DisplayName', 'AoA 1-4 (Middle-Right)');
-plot(timestamps, AoA_34, '-d', 'DisplayName', 'AoA 3-4 (Left-Right)');
+%% Plot AoA over time for each antenna pair
 
-% Set axis labels, title, and legend
-xlabel('Relative Time (s)');
-ylabel('Angle of Arrival (AoA) (degrees)');
-title('Angle of Arrival over Time');
-ylim([-180 180]);
-yticks(-15:20:15);
+% figure('Name', 'AoA');
+% hold on; % Hold on to overlay multiple plots
+% plot(timestamps, rad2deg(AoA_31), '-o', 'DisplayName', 'AoA 3-1 (Left-Middle)');
+% plot(timestamps, rad2deg(AoA_14), '-s', 'DisplayName', 'AoA 1-4 (Middle-Right)');
+% plot(timestamps, rad2deg(AoA_34), '-d', 'DisplayName', 'AoA 3-4 (Left-Right)');
+% xlabel('Relative Time (s)');
+% ylabel('Angle of Arrival (AoA) (degrees)');
+% title('Angle of Arrival over Time');
+% ylim([-180 180]);
+% yticks(-180:45:180);
+% grid on;
+% set(gca, 'YGrid', 'on', 'YMinorGrid', 'off');
+% legend show;
+% hold off;
+
+%% Plot Location with time
+
+% Extract x, y coordinates and timestamps
+x_coords = target_loc(1, :);
+y_coords = target_loc(2, :);
+
+% Calculate time differences between consecutive timestamps
+time_diffs = diff(timestamps); % Time intervals for animation
+% Create figure and plot setup
+figure('Name', '2D Location Animation');
+hold on;
+xlabel('X Coordinate');
+ylabel('Y Coordinate');
+title('2D Location over time');
+xlim([min(x_coords) - 0.1, max(x_coords) + 0.1]);
+ylim([min(y_coords) - 0.01, max(y_coords) + 0.1]);
 grid on;
-set(gca, 'YGrid', 'on', 'YMinorGrid', 'off');
-legend show;
+
+% Plot AP markers
+plot(ap_31(1), ap_31(2), 'rs', 'MarkerSize', 10, 'MarkerFaceColor', 'r', 'DisplayName', 'AP 31 (Left)');
+plot(ap_14(1), ap_14(2), 'gs', 'MarkerSize', 10, 'MarkerFaceColor', 'g', 'DisplayName', 'AP 14 (Middle)');
+plot(ap_34(1), ap_34(2), 'bs', 'MarkerSize', 10, 'MarkerFaceColor', 'b', 'DisplayName', 'AP 34 (Right)');
+text(ap_31(1), ap_31(2), '  AP 31', 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right');
+text(ap_14(1), ap_14(2), '  AP 14', 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right');
+text(ap_34(1), ap_34(2), '  AP 34', 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'left');
+
+% Initialize the plot with the first client location
+h = plot(x_coords(1), y_coords(1), 'bo', 'MarkerSize', 8, 'MarkerFaceColor', 'b', 'DisplayName', 'Client');
+
+% Loop through each point and update the plot using time intervals
+for i = 1:num_packets - 1
+    % Update the x and y data of the plot
+    set(h, 'XData', x_coords(i), 'YData', y_coords(i));
+    
+    % Optional: Plot the trajectory by adding a trace
+    % plot(x_coords(1:i), y_coords(1:i), 'b-', 'LineWidth', 1);
+    
+    % Pause based on the actual time difference between points
+    pause(time_diffs(i)); % Adjusting speed based on actual data intervals
+end
+
 hold off;

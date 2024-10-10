@@ -2,7 +2,7 @@ function [AoA] = extract_angle(csi1, csi2, lambdas, d)
     % extract_angle csi1, csi2: CSI Info corresponding Antenna ...
     % lambdas: Is a subcarrier wave length vector
     % d: Distance between antennas
-    % Returns the Angle of Arrival for a given CSI info from two antennas
+    % Returns the Angle of Arrival(radians) for a given CSI info from two antennas
     
     num_subcarriers = length(lambdas);
     
@@ -18,5 +18,5 @@ function [AoA] = extract_angle(csi1, csi2, lambdas, d)
     aoa_radians = real(asin((lambdas .* delta_phase) / (2 * pi * d)));
 
     % Convert AoA from radians to degrees
-    AoA = rad2deg(mean(aoa_radians));
+    AoA = mean(aoa_radians);
 end
