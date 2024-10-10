@@ -22,7 +22,7 @@ cores = unique(sort(data(:, 2)));
 nsss = unique(sort(data(:, 3)));
 tonesmin = unique(sort(data(:, 4)));
 
-% Ensure all CSI data has the same type (same number of cores/nss/bandwidths)
+% Ensure all CSI data has the same type (same num of cores/nss/bandwidths)
 coreno = length(cores);
 nssno = length(nsss);
 itemperspectrum = length(tonesmin);
@@ -35,7 +35,9 @@ max_packets = length(SN);
 
 % Preallocate for txtsdata and alldata
 txtsdata = zeros(max_packets, 2); % Assuming two columns: txts and txseqno
-alldata(max_packets) = struct('tones', [], 'phytype', [], 'rxts', [], 'rxtsslow', [], 'rxseqno', [], 'txts', [], 'sn', [], 'ts', [], 'srcmac', [], 'powers', [], 'phy0', [], 'core', []); 
+alldata(max_packets) = struct('tones', [], 'phytype', [], 'rxts', [], ...
+    'rxtsslow', [], 'rxseqno', [], 'txts', [], 'sn', [], 'ts', [], ...
+    'srcmac', [], 'powers', [], 'phy0', [], 'core', []); 
 
 packet = 1;
 for snjj = 1:length(SN)
@@ -79,7 +81,7 @@ for snjj = 1:length(SN)
         for nsskk = 1:length(nsss)
             nss = nsss(nsskk);
 
-            datasub = datasn(datasn(:, 2) == core & datasn(:, 3) == nss, :);
+            datasub = datasn(datasn(:,2) == core & datasn(:,3) == nss,:);
 
             if size(datasub, 1) < itemperspectrum
                 warning('Incomplete data for SN %d', sn);
@@ -211,16 +213,14 @@ end
 % legend show;
 % hold off;
 
-%% Plot Location with time
+%% Plot 2D Location with time
 
-% Extract x, y coordinates and timestamps
 x_coords = target_loc(1, :);
 y_coords = target_loc(2, :);
+time_diffs = diff(timestamps);
 
-% Calculate time differences between consecutive timestamps
-time_diffs = diff(timestamps); % Time intervals for animation
-% Create figure and plot setup
-figure('Name', '2D Location Animation');
+fig = figure('Name', '2D Location Animation', 'Position', ...
+    [100, 100, 800, 600]);
 hold on;
 xlabel('X Coordinate');
 ylabel('Y Coordinate');
@@ -229,27 +229,78 @@ xlim([min(x_coords) - 0.1, max(x_coords) + 0.1]);
 ylim([min(y_coords) - 0.01, max(y_coords) + 0.1]);
 grid on;
 
-% Plot AP markers
-plot(ap_31(1), ap_31(2), 'rs', 'MarkerSize', 10, 'MarkerFaceColor', 'r', 'DisplayName', 'AP 31 (Left)');
-plot(ap_14(1), ap_14(2), 'gs', 'MarkerSize', 10, 'MarkerFaceColor', 'g', 'DisplayName', 'AP 14 (Middle)');
-plot(ap_34(1), ap_34(2), 'bs', 'MarkerSize', 10, 'MarkerFaceColor', 'b', 'DisplayName', 'AP 34 (Right)');
-text(ap_31(1), ap_31(2), '  AP 31', 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right');
-text(ap_14(1), ap_14(2), '  AP 14', 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right');
-text(ap_34(1), ap_34(2), '  AP 34', 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'left');
+plot(ap_31(1), ap_31(2), 'rs', 'MarkerSize', 5, 'MarkerFaceColor', ...
+    'r', 'DisplayName', 'AP 31 (Left)');
+plot(ap_14(1), ap_14(2), 'gs', 'MarkerSize', 5, 'MarkerFaceColor', ...
+    'g', 'DisplayName', 'AP 14 (Middle)');
+plot(ap_34(1), ap_34(2), 'bs', 'MarkerSize', 5, 'MarkerFaceColor', ...
+    'b', 'DisplayName', 'AP 34 (Right)');
 
-% Initialize the plot with the first client location
-h = plot(x_coords(1), y_coords(1), 'bo', 'MarkerSize', 8, 'MarkerFaceColor', 'b', 'DisplayName', 'Client');
+text(ap_31(1), ap_31(2), 'AP 31', 'VerticalAlignment', 'top', ...
+    'HorizontalAlignment', 'center');
+text(ap_14(1), ap_14(2), 'AP 14', 'VerticalAlignment', 'top', ...
+    'HorizontalAlignment', 'center');
+text(ap_34(1), ap_34(2), 'AP 34', 'VerticalAlignment', 'top', ...
+    'HorizontalAlignment', 'center');
 
-% Loop through each point and update the plot using time intervals
-for i = 1:num_packets - 1
-    % Update the x and y data of the plot
-    set(h, 'XData', x_coords(i), 'YData', y_coords(i));
+h = plot(x_coords(1), y_coords(1), 'bo', 'MarkerSize', 8, ...
+    'MarkerFaceColor', 'b', 'DisplayName', 'Client');
+
+setappdata(fig, 'x_coords', x_coords);
+setappdata(fig, 'y_coords', y_coords);
+setappdata(fig, 'time_diffs', time_diffs);
+setappdata(fig, 'num_packets', num_packets);
+setappdata(fig, 'h_client', h);
+
+uicontrol('Style', 'pushbutton', 'String', 'Play', ...
+    'Position', [20, 10, 60, 30], 'Callback', @PlayCallback);
+uicontrol('Style', 'pushbutton', 'String', 'Stop', ...
+    'Position', [100, 10, 60, 30], 'Callback', @StopCallback);
+uicontrol('Style', 'pushbutton', 'String', 'Exit', ...
+    'Position', [180, 10, 60, 30], 'Callback', @exitCallback);
+
+setappdata(gcf, 'stopAnimation', false);
+
+function PlayCallback(~, ~)
+    disp('Playing Animation ..');
+    % Retrieve data from appdata
+    h = getappdata(gcf, 'h_client');
+    x_coords = getappdata(gcf, 'x_coords');
+    y_coords = getappdata(gcf, 'y_coords');
+    time_diffs = getappdata(gcf, 'time_diffs');
+    num_packets = getappdata(gcf, 'num_packets');
     
-    % Optional: Plot the trajectory by adding a trace
-    % plot(x_coords(1:i), y_coords(1:i), 'b-', 'LineWidth', 1);
+    playButton = gco;
+    set(playButton, 'Enable', 'off');
     
-    % Pause based on the actual time difference between points
-    pause(time_diffs(i)); % Adjusting speed based on actual data intervals
+    % Reset stop condition
+    setappdata(gcf, 'stopAnimation', false); 
+
+    % Loop through each point and update the plot using time intervals
+    for i = 1:num_packets - 1
+        % Check if the stop condition is true
+        if getappdata(gcf, 'stopAnimation')
+            break;
+        end
+
+        % Update the x and y data of the plot
+        set(h, 'XData', x_coords(i), 'YData', y_coords(i));
+
+        % Optional: Plot the trajectory by adding a trace
+        % plot(x_coords(1:i), y_coords(1:i), 'b-', 'LineWidth', 0.5);
+        
+        % Pause based on the actual time difference between points
+        pause(time_diffs(i)); 
+    end
+
+    set(playButton, 'Enable', 'on'); % Enable the Play button again
 end
 
-hold off;
+function StopCallback(~, ~)
+    setappdata(gcf, 'stopAnimation', true); % Set stop condition to true
+end
+
+function exitCallback(~, ~)
+    disp('Exiting...');
+    close(gcf);
+end
