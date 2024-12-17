@@ -1,4 +1,4 @@
-# AX-CSI: Enabling CSI Extraction on Commercial 802.11ax Wi-Fi Platforms - **V0.0.4**
+# AX-CSI: Enabling CSI Extraction on Commercial 802.11ax Wi-Fi Platforms 
 
 ---
 
@@ -49,7 +49,7 @@ In the following steps, it is assumed you have a device used to collect CSI from
      chmod +x *
      ```
 5. **Load the Modified Driver:** 
-   - Load it from /jffs/CSI5G. [SHOULD BE DONE AFTER EVERY REBOOT/SHUTDOWN OF DEVICE]  
+   - Load it from /jffs/CSI5G. [**SHOULD BE DONE AFTER EVERY REBOOT/SHUTDOWN OF DEVICE**]  
      ```bash
      /jffs/CSI5G/reload.sh
      ```
@@ -58,7 +58,7 @@ In the following steps, it is assumed you have a device used to collect CSI from
 6. **Configure AP Channel and Bandwidth:**
    - Configure the AP on the same channel/bandwidth as the devices from which you want to capture CSI:
      ```bash
-     /jffs/CSI5G/config5GHZ.sh 157 80 8 1 8
+     /jffs/CSI5G/config5GHZ.sh 157 80 15 1 8
      ```
    - Parameters for `config5GHz.sh`:
      - `CHANNEL`: Primary Wi-Fi channel to use (e.g., 36, 140, 157).

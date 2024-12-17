@@ -9,7 +9,7 @@ load('matlabData/data.mat', '-ascii');
 
 % Initialize parameters
 ch_num = 56;
-d = 0.05;
+d = 0.089;
 BW = 80;
 FREQ = 2^26 / 277022;
 FREQ = FREQ * 1e6;
@@ -155,7 +155,7 @@ subcarriers = get_subcarriers(ch_num);
 % Preallocate AoA and timestamps
 AoA_31 = zeros(1, num_packets); % Left - Middle
 AoA_14 = zeros(1, num_packets); % Middle - Right
-AoA_34 = zeros(1, num_packets); % Left - Right
+% AoA_34 = zeros(1, num_packets); % Left - Right
 target_loc = zeros(2, num_packets); % Location of target
 timestamps = zeros(1, num_packets);
 
@@ -198,20 +198,20 @@ end
 
 %% Plot AoA over time for each antenna pair
 
-% figure('Name', 'AoA');
-% hold on; % Hold on to overlay multiple plots
-% plot(timestamps, rad2deg(AoA_31), '-o', 'DisplayName', 'AoA 3-1 (Left-Middle)');
-% plot(timestamps, rad2deg(AoA_14), '-s', 'DisplayName', 'AoA 1-4 (Middle-Right)');
-% plot(timestamps, rad2deg(AoA_34), '-d', 'DisplayName', 'AoA 3-4 (Left-Right)');
-% xlabel('Relative Time (s)');
-% ylabel('Angle of Arrival (AoA) (degrees)');
-% title('Angle of Arrival over Time');
-% ylim([-180 180]);
-% yticks(-180:45:180);
-% grid on;
-% set(gca, 'YGrid', 'on', 'YMinorGrid', 'off');
-% legend show;
-% hold off;
+figure('Name', 'AoA');
+hold on; % Hold on to overlay multiple plots
+plot(timestamps, rad2deg(AoA_31), '-o', 'DisplayName', 'AoA 3-1 (Left-Middle)');
+plot(timestamps, rad2deg(AoA_14), '-s', 'DisplayName', 'AoA 1-4 (Middle-Right)');
+plot(timestamps, rad2deg(AoA_34), '-d', 'DisplayName', 'AoA 3-4 (Left-Right)');
+xlabel('Relative Time (s)');
+ylabel('Angle of Arrival (AoA) (degrees)');
+title('Angle of Arrival over Time');
+ylim([-180 180]);
+yticks(-30:4:30);
+grid on;
+set(gca, 'YGrid', 'on', 'YMinorGrid', 'off');
+legend show;
+hold off;
 
 %% Plot 2D Location with time
 
