@@ -1,0 +1,3 @@
+parameters:
+  k: 2
+  order: euclidean

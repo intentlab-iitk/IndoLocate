@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["indolocate"]
+include-package-data = true
+
+[tool.setuptools.scripts]
+indolocate-preprocess = "indolocate.scripts.preprocess:main"
+indolocate-train-knn = "indolocate.scripts.train_knn:main"
+indolocate-train-rf = "indolocate.scripts.train_rf:main"
+indolocate-test-knn = "indolocate.scripts.test_knn:main"
+indolocate-test-rf = "indolocate.scripts.test_rf:main"
