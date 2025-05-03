@@ -1,14 +1,30 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-packages = ["indolocate"]
-include-package-data = true
+[project]
+name = "indolocate"
+version = "0.1.0"
+description = "A modular framework for indoor localization using WiFi."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+  {name = "Aravind Potluri", email = "aravindswami135@gmail.com"}
+]
 
-[tool.setuptools.scripts]
-indolocate-preprocess = "indolocate.scripts.preprocess:main"
-indolocate-train-knn = "indolocate.scripts.train_knn:main"
-indolocate-train-rf = "indolocate.scripts.train_rf:main"
-indolocate-test-knn = "indolocate.scripts.test_knn:main"
-indolocate-test-rf = "indolocate.scripts.test_rf:main"
+dependencies = [
+]
+
+[project.urls]
+Homepage = "https://github.com/cipherswami/Indolocate"
+
+[project.optional-dependencies]
+dev = ["pytest"]
+docs = ["mkdocs", "mkdocstrings[python]"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+indolocate = ["algorithms/configs/*.yaml"]

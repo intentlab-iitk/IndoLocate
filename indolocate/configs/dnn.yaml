@@ -1,9 +1,0 @@
-parameters:
-  input_dim: 992
-  output_dim: 3
-  hidden_layers: [992, 992, 922]
-  activation: relu
-  learning_rate: 0.001
-  loss: mse
-  epochs: 2000
-  batch_size: 30

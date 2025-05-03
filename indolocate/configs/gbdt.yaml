@@ -1,3 +1,0 @@
-parameters:
-  n_estimators: 20
-  loss: "squared_error"

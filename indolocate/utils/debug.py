@@ -1,2 +1,0 @@
-def debug():
-    print("---DEBUGGER---")
