@@ -7,7 +7,7 @@ import indolocate
 import indolocate.utils as utils
 
 # Supress TF warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # Dataset (WILD v2): https://www.kaggle.com/c/wild-v2
 
@@ -41,51 +41,88 @@ data2 = {
 
 # Training Functions
 def train_knn_rssi():
+    X_train1, Y_train1 = utils.preprocess_rssi(data1['rssi'], data1['labels'])
+    X_train1, Y_train1 = utils.get_trainset(X_train1, Y_train1)
+    X_train2, Y_train2 = utils.preprocess_rssi(data2['rssi'], data2['labels'])
+    X_train2, Y_train2 = utils.get_trainset(X_train2, Y_train2)
 
-    if data1['rssi'] is None:
-        print("Skipping KNN_RSSI with Env 1 (no data).")
-    else:
-        X_train1, Y_train1 = utils.get_trainset(data1['rssi'], data1['labels'])
-        model1 = indolocate.init("knn")
-        model1.fit(X_train1, Y_train1)
-        model1.save("models/knn_rssi_env1_model.pkl")
+    model1 = indolocate.init("kNNRegressor")
+    model1.fit(X_train1, Y_train1)
+    model1.save("models/knn_rssi_env1_model.pkl")
 
-    if data2['rssi'] is None:
-        print("Skipping KNN_RSSI with ENV 2 (no data).")
-    else:
-        X_train2, Y_train2 = utils.get_trainset(data2['rssi'], data2['labels'])
-        model2 = indolocate.init("knn")
-        model2.fit(X_train2, Y_train2)
-        model2.save("models/knn_rssi_env2_model.pkl")
+    model2 = indolocate.init("kNNRegressor")
+    model2.fit(X_train2, Y_train2)
+    model2.save("models/knn_rssi_env2_model.pkl")
 
-# def train_knn_csi():
-#     if csi_data is None:
-#         print("Skipping KNN_CSI (no CSI data).")
-#         return
+def train_knn_csi():
+    X_train1, Y_train1 = utils.preprocess_rssi(data1['rssi'], data1['labels'])
+    X_train1, Y_train1 = utils.get_trainset(X_train1, Y_train1)
+    X_train2, Y_train2 = utils.preprocess_rssi(data2['rssi'], data2['labels'])
+    X_train2, Y_train2 = utils.get_trainset(X_train2, Y_train2)
 
-#     csi_data_processed = indolocate.preprocess_csi_data(csi_data)
-#     X_train, Y_train = indolocate.get_trainset(csi_data_processed, labels)
-#     model = indolocate.init("knn")
-#     model.fit(X_train, Y_train)
-#     model.save("models/knn_csi_model.pkl")
+    model1 = indolocate.init("kNNRegressor")
+    model1.fit(X_train1, Y_train1)
+    model1.save("models/knn_rssi_env1_model.pkl")
 
-# def train_rf():
-#     if rssi_data is None:
-#         print("Skipping RF (no RSSI data).")
-#         return
-#     X_train, Y_train = indolocate.get_trainset(rssi_data, labels)
-#     model = indolocate.init("rf")
-#     model.fit(X_train, Y_train)
-#     model.save("models/rf_model.pkl")
+    model2 = indolocate.init("kNNRegressor")
+    model2.fit(X_train2, Y_train2)
+    model2.save("models/knn_rssi_env2_model.pkl")
 
-# def train_dnn():
-#     if csi_data is None:
-#         print("Skipping DNN (no CSI data).")
-#         return
-#     X_train, Y_train = indolocate.get_trainset(csi_data, labels)
-#     model = indolocate.init("dnn")
-#     model.fit(X_train, Y_train)
-#     model.save("models/dnn_model.pkl")
+def train_linear_regressor_rssi():
+    X_train1, Y_train1 = utils.preprocess_rssi(data1['rssi'], data1['labels'])
+    X_train1, Y_train1 = utils.get_trainset(X_train1, Y_train1)
+    X_train2, Y_train2 = utils.preprocess_rssi(data2['rssi'], data2['labels'])
+    X_train2, Y_train2 = utils.get_trainset(X_train2, Y_train2)
+
+    model = indolocate.init("LinearRegressor")
+    model.fit(X_train1, Y_train1)
+    model.save("models/linear_reg_env1_model.pkl")
+
+    model = indolocate.init("LinearRegressor")
+    model.fit(X_train2, Y_train2)
+    model.save("models/linear_reg_env2_model.pkl")
+
+def train_ridge_regressor_rssi():
+    X_train1, Y_train1 = utils.preprocess_rssi(data1['rssi'], data1['labels'])
+    X_train1, Y_train1 = utils.get_trainset(X_train1, Y_train1)
+    X_train2, Y_train2 = utils.preprocess_rssi(data2['rssi'], data2['labels'])
+    X_train2, Y_train2 = utils.get_trainset(X_train2, Y_train2)
+
+    model = indolocate.init("RidgeRegressor")
+    model.fit(X_train1, Y_train1)
+    model.save("models/ridge_reg_env1_model.pkl")
+
+    model = indolocate.init("RidgeRegressor")
+    model.fit(X_train2, Y_train2)
+    model.save("models/ridge_reg_env2_model.pkl")
+
+def train_lasso_regressor_rssi():
+    X_train1, Y_train1 = utils.preprocess_rssi(data1['rssi'], data1['labels'])
+    X_train1, Y_train1 = utils.get_trainset(X_train1, Y_train1)
+    X_train2, Y_train2 = utils.preprocess_rssi(data2['rssi'], data2['labels'])
+    X_train2, Y_train2 = utils.get_trainset(X_train2, Y_train2)
+
+    model = indolocate.init("LassoRegressor")
+    model.fit(X_train1, Y_train1)
+    model.save("models/lasso_reg_env1_model.pkl")
+
+    model = indolocate.init("LassoRegressor")
+    model.fit(X_train2, Y_train2)
+    model.save("models/lasso_reg_env2_model.pkl")
+
+def train_polynomial_regressor_rssi():
+    X_train1, Y_train1 = utils.preprocess_rssi(data1['rssi'], data1['labels'])
+    X_train1, Y_train1 = utils.get_trainset(X_train1, Y_train1)
+    X_train2, Y_train2 = utils.preprocess_rssi(data2['rssi'], data2['labels'])
+    X_train2, Y_train2 = utils.get_trainset(X_train2, Y_train2)
+
+    model = indolocate.init("PolynomialRegressor")
+    model.fit(X_train1, Y_train1)
+    model.save("models/polynomial_reg_env1_model.pkl")
+
+    model = indolocate.init("PolynomialRegressor")
+    model.fit(X_train2, Y_train2)
+    model.save("models/polynomial_reg_env2_model.pkl")
 
 def main():
     parser = argparse.ArgumentParser(description="Train the configured ML models")
@@ -105,8 +142,6 @@ def main():
         model_type = model_type.strip().lower()
         function_name = f"train_{model_type}"  # Dynamically construct function name
 
-        print(f"\n[$] Training {model_type.upper()} model...")
-        
         # Check if function exists and call it
         if function_name in globals() and callable(globals()[function_name]):
             globals()[function_name]()  # Call the function dynamically

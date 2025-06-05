@@ -1,5 +1,7 @@
-# Project       : indolocate
-# File          : uitls/__init__.py
+"""
+File            : indolocate/utils/__init__.py  
+Description     : Indolocate utils module.  
+"""
 
 from .datasplitter import get_testset
 from .datasplitter import get_trainset

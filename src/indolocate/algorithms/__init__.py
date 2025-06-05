@@ -1,25 +1,41 @@
+"""
+File            : indolocate/algorithms/__init__.py  
+Description     : Init file for algorithms module.  
+"""
+
+# Imports
+import logging
+from typing import Literal, get_args
 from .base import Algorithm
 
-def init(alogrithm: str)-> Algorithm:
-    """
-    This function loads and returns an initialized instance of that algorithm.
+ALGORITHM = Literal[
+    "kNNRegressor",
+    "LinearRegressor",
+    "RidgeRegressor",
+    "LassoRegressor",
+    "PolynomialRegressor",
+]
 
-    Parameters:
-        algorithm (str): The name of the algorithm to load (e.g., "knn", "svm").
-
-    Returns:
-        Instance (class): An instance of the corresponding algorithm class.
-
-    Raises:
-        ValueError: If the given algorithm name is not supported.
-    """
-    algo_map = {
-        "knn": lambda: __import__(__name__ + '.knn', fromlist=['kNN']).kNN(),
-        "svm": lambda: __import__(__name__ + '.svm', fromlist=['SVM']).SVM(),
-    }
-
-    key = alogrithm.lower()
-    try:
-        return algo_map[key]()
-    except KeyError:
-        raise ValueError(f"Unknown model: {alogrithm}")
+def init(algorithm_name: ALGORITHM) -> Algorithm:
+    if algorithm_name == "kNNRegressor":
+        from .knn import kNNRegressor
+        return kNNRegressor()
+    elif algorithm_name == "LinearRegressor":
+        from .linear import LinearRegressor
+        return LinearRegressor()
+    elif algorithm_name == "RidgeRegressor":
+        from .linear import RidgeRegressor
+        return RidgeRegressor()
+    elif algorithm_name == "LassoRegressor":
+        from .linear import LassoRegressor
+        return LassoRegressor()
+    elif algorithm_name == "PolynomialRegressor":
+        from .nonlinear import PolynomialRegressor
+        return PolynomialRegressor()
+    else:
+        logging.error(
+            f"Unknown algorithm: {repr(algorithm_name)}. "
+            f"Valid options: kNNRegressor, LinearRegressor, RidgeRegressor, "
+            f"LassoRegressor, PolynomialRegressor."
+        )
+        raise SystemExit("Invalid algorithm provided.")

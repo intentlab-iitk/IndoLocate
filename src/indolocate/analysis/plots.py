@@ -13,8 +13,8 @@ def plot_metric(ax: Axes, metrics_list, metric_name):
     ax.set_title(metric_name)
     ax.set_ylabel("Error (m)")
     ax.set_xlabel("Algorithm")
+    ax.tick_params(axis='x', rotation=45)
     ax.grid(True)
-
 
 def plot_histograms(ax: Axes, metrics_list):
     """

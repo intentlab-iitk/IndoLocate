@@ -1,0 +1,3 @@
+fit_intercept: true
+degree: 2
+include_bias: false

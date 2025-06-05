@@ -176,4 +176,3 @@ cython_debug/
 # User added
 *.creds.*
 models/
-*.mp4

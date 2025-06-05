@@ -7,7 +7,7 @@ name = "indolocate"
 version = "0.1.0"
 description = "A modular framework for indoor localization using WiFi."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 license = "MIT"
 authors = [
   {name = "Aravind Potluri", email = "aravindswami135@gmail.com"}

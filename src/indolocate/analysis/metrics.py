@@ -14,7 +14,7 @@ def calculate_errors(true_positions: np.ndarray, predicted_positions: np.ndarray
     """
     return np.linalg.norm(true_positions - predicted_positions, axis=1)
 
-def calculate_mean(errors: list[float]) -> float:
+def calculate_mean(errors: np.ndarray) -> float:
     """
     Calculate the arithmetic mean (average) of a list of errors.
 
@@ -26,7 +26,7 @@ def calculate_mean(errors: list[float]) -> float:
     """
     return stats.mean(errors)
 
-def calculate_median(errors: list[float]) -> float:
+def calculate_median(errors: np.ndarray) -> float:
     """
     Calculate the median value from a list of errors.
 
@@ -38,7 +38,7 @@ def calculate_median(errors: list[float]) -> float:
     """
     return stats.median(errors)
 
-def calculate_mode(errors: list[float]) -> float:
+def calculate_mode(errors: np.ndarray) -> float:
     """
     Calculate the mode (most frequent value) from a list of errors.
 
@@ -53,7 +53,7 @@ def calculate_mode(errors: list[float]) -> float:
     """
     return stats.mode(errors)
 
-def calculate_stddev(errors: list[float]) -> float:
+def calculate_stddev(errors: np.ndarray) -> float:
     """
     Calculate the population standard deviation of error values.
 
@@ -65,7 +65,7 @@ def calculate_stddev(errors: list[float]) -> float:
     """
     return stats.pstdev(errors)
 
-def calculate_minimum(errors: list[float]) -> float:
+def calculate_minimum(errors: np.ndarray) -> float:
     """
     Retrieve the minimum (smallest) error value from the list.
 
@@ -77,7 +77,7 @@ def calculate_minimum(errors: list[float]) -> float:
     """
     return np.min(errors)
 
-def calculate_maximum(errors: list[float]) -> float:
+def calculate_maximum(errors: np.ndarray) -> float:
     """
     Retrieve the maximum (largest) error value from the list.
 
@@ -89,7 +89,7 @@ def calculate_maximum(errors: list[float]) -> float:
     """
     return np.max(errors)
 
-def calculate_mae(errors: list[float]) -> float:
+def calculate_mae(errors: np.ndarray) -> float:
     """
     Calculate the Mean Absolute Error (MAE) from a list of errors.
 
@@ -101,7 +101,7 @@ def calculate_mae(errors: list[float]) -> float:
     """
     return np.mean(np.abs(errors))
 
-def calculate_rmse(errors: list[float]) -> float:
+def calculate_rmse(errors: np.ndarray) -> float:
     """
     Calculate the Root Mean Square Error (RMSE) from a list of errors.
 
@@ -113,7 +113,7 @@ def calculate_rmse(errors: list[float]) -> float:
     """
     return np.sqrt(np.mean(np.square(errors)))
 
-def calculate_percetile(errors: list[float], n: int) -> float:
+def calculate_percetile(errors: np.ndarray, n: int) -> float:
     """
     Calculate the nth percentile of error values.
 

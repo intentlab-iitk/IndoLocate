@@ -1,3 +1,8 @@
+"""
+File            : indolocate/algorithms/base.py   
+Description     : Contains common funcs and class for algorithm module.  
+"""
+
 # Import packages
 import os
 import yaml
@@ -8,23 +13,26 @@ from typing import Any
 import importlib.resources as pkg_resources
 
 class Algorithm:
-    def __init__(self, algorithm: str):
-        self.name: str = algorithm
+    def __init__(self):
+        self.name: str = self.__class__.__name__
         self.config: dict | None = None
-        self.model: Any = None
+        self.model = None
         logging.info(f"Initializing {self.name} model")
 
     def _configure(self, config_file: str):
+        """
+        Internal package configuration for models.
+        """
         try:
             with pkg_resources.files("indolocate.algorithms.configs").joinpath(config_file).open('r') as file:
                 self.config = yaml.safe_load(file) or {}
             logging.info(f"Loaded configuration for {self.name} from package")
         except FileNotFoundError:
             logging.error(f"Configuration file '{config_file}' not found in package.")
-            exit
+            return
         except yaml.YAMLError as e:
             logging.error(f"Error parsing YAML file '{config_file}' from package: {e}")
-            exit
+            return
 
     def configure(self, config_file: str) -> None:
         """
@@ -48,15 +56,12 @@ class Algorithm:
 
     def load(self, path: str):
         """
-        Load the model from specified pickel file.
+        Load attributes from the specified pickle file into this instance.
         """
         with open(path, "rb") as f:
-            model_data = pickle.load(f)
+            loaded = pickle.load(f)
 
-        self.model = model_data.model
-        self.config = model_data.config
-        self.name = model_data.name
-
+        self.__dict__.update(loaded.__dict__)
         logging.info(f"{self.name} model loaded from {path}")
 
     def fit(self, X_train: np.ndarray, Y_train: np.ndarray):
@@ -64,9 +69,10 @@ class Algorithm:
         Fit the model with given data.
         """
         self.model(X_train, Y_train)
+        logging.info(f"{self.name} model fitted with {X_train.shape[0]} samples")
 
     def predict(self, X_sample: np.ndarray) -> np.ndarray:
         """
         Predicts the location for the given sample using the model.
         """
-        self.model.predit(X_sample)
+        return self.model.predit(X_sample)

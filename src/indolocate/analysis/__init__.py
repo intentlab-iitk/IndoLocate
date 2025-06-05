@@ -1,5 +1,7 @@
-# Project       : indolocate
-# File          : analyze/__init__.py
+"""
+File            : indolocate/analysis/__init__.py   
+Description     : Utilites module for indolocate package.
+"""
 
 # Imports
 import logging

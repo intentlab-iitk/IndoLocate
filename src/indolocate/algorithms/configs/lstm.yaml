@@ -1,7 +1,0 @@
-parameters:
-  n_units: 992
-  activation: "tanh"
-  optimizer: "adam"
-  loss: "mse"
-  epochs: 1000
-  batch_size: 32
