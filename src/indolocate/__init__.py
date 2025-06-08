@@ -8,10 +8,10 @@ Author          : Aravind Potluri <aravindp23@iitk.ac.in>
 import os
 import logging
 from .algorithms import init
-from .web import webserver
+from .app import webserver
 
 # Macros
-LOG_LEVEL = logging.INFO
+LOG_LEVEL = logging.DEBUG
 LOG_FORMAT = '[Indolocate] %(levelname)s - %(message)s'
 
 # Env settings

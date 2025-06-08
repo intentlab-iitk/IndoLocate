@@ -9,6 +9,7 @@ from typing import Literal, get_args
 from .base import Algorithm
 
 ALGORITHM = Literal[
+    "BaseModel",
     "kNNRegressor",
     "LinearRegressor",
     "RidgeRegressor",
@@ -16,8 +17,13 @@ ALGORITHM = Literal[
     "PolynomialRegressor",
 ]
 
+# Dynamically extract valid algorithm names from Literal
+VALID_ALGORITHMS = get_args(ALGORITHM)
+
 def init(algorithm_name: ALGORITHM) -> Algorithm:
-    if algorithm_name == "kNNRegressor":
+    if algorithm_name == "BaseModel":
+        return Algorithm()
+    elif algorithm_name == "kNNRegressor":
         from .knn import kNNRegressor
         return kNNRegressor()
     elif algorithm_name == "LinearRegressor":
@@ -35,7 +41,7 @@ def init(algorithm_name: ALGORITHM) -> Algorithm:
     else:
         logging.error(
             f"Unknown algorithm: {repr(algorithm_name)}. "
-            f"Valid options: kNNRegressor, LinearRegressor, RidgeRegressor, "
-            f"LassoRegressor, PolynomialRegressor."
+            f"Valid options: {', '.join(get_args(ALGORITHM))}"
         )
         raise SystemExit("Invalid algorithm provided.")
+
